@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examen — Architecture Microservices avec Spring Boot</title>
+  <link rel="stylesheet" href="style.css" />
+ 
+  <!-- Google Fonts: Syne (display) + Source Serif 4 (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+</head>
+<body>
+
+
+<!-- ========== DARK MODE TOGGLE ========== -->
+<button id="darkToggle" title="Basculer le thème">
+  <span id="darkIcon">🌙</span>
+</button>
+
+<!-- ========== LANDING SCREEN ========== -->
+<div id="landingScreen" class="screen active">
+  <div class="landing-bg">
+    <div class="grid-overlay"></div>
+  </div>
+  <div class="landing-content">
+    <div class="badge">Faculté des Sciences — FSBM</div>
+    <h1 class="landing-title">
+      Architecture<br/>&amp; Développement<br/>
+      <span class="accent">Microservices</span>
+    </h1>
+    <p class="landing-sub">Spring Boot · JPA · REST API · Architecture en Couches</p>
+    <div class="landing-meta">
+      <div class="meta-item"><span class="meta-label">Questions</span><span class="meta-val" id="totalQCount">30</span></div>
+      <div class="meta-divider"></div>
+      <div class="meta-item"><span class="meta-label">Durée</span><span class="meta-val">45 min</span></div>
+      <div class="meta-divider"></div>
+      <div class="meta-item"><span class="meta-label">Niveau</span><span class="meta-val">L3 / M1</span></div>
+    </div>
+    <div class="landing-rules">
+      <h3>Consignes</h3>
+      <ul>
+        <li>Les questions sont mélangées aléatoirement à chaque session.</li>
+        <li>Répondez à <strong>toutes</strong> les questions avant de soumettre.</li>
+        <li>Une seule réponse correcte par QCM.</li>
+        <li>Le clic droit et la copie sont désactivés pendant l'examen.</li>
+      </ul>
+    </div>
+    <button class="btn-primary" id="startBtn">Commencer l'examen →</button>
+  </div>
+</div>
+
+<!-- ========== EXAM SCREEN ========== -->
+<div id="examScreen" class="screen">
+
+  <!-- Header bar -->
+  <header class="exam-header">
+    <div class="exam-brand">MS<span>Exam</span></div>
+    <div class="exam-center">
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-label"><span id="qCurrent">1</span> / <span id="qTotal">30</span></div>
+    </div>
+    <div class="timer-wrap">
+      <svg viewBox="0 0 36 36" class="timer-svg">
+        <circle class="timer-bg" cx="18" cy="18" r="15.9"/>
+        <circle class="timer-ring" id="timerRing" cx="18" cy="18" r="15.9"/>
+      </svg>
+      <span id="timerDisplay">45:00</span>
+    </div>
+  </header>
+
+  <!-- Score mini bar -->
+  <div class="score-strip">
+    <span>Score en cours&nbsp;: <strong id="liveScore">–</strong></span>
+    <span class="section-tag" id="sectionTag">–</span>
+  </div>
+
+  <!-- Question card -->
+  <main class="question-area">
+    <div class="q-card" id="qCard">
+      <div class="q-type-badge" id="qTypeBadge">QCM</div>
+      <p class="q-number-label">Question <span id="qNumLabel">1</span></p>
+      <h2 class="q-text" id="qText">Chargement…</h2>
+
+      <!-- Code block (optional) -->
+      <pre class="code-block" id="qCode" style="display:none"></pre>
+
+      <!-- Answer zone -->
+      <div class="answer-zone" id="answerZone"></div>
+
+      <!-- Short answer textarea -->
+      <textarea id="shortInput" class="short-input" placeholder="Votre réponse…" style="display:none"></textarea>
+    </div>
+  </main>
+
+  <!-- Navigation -->
+  <footer class="exam-footer">
+    <button class="btn-nav" id="prevBtn" disabled>← Précédent</button>
+    <div class="q-dots" id="qDots"></div>
+    <button class="btn-nav" id="nextBtn">Suivant →</button>
+  </footer>
+
+  <!-- Submit floating button (appears at last question) -->
+  <button class="btn-submit" id="submitBtn" style="display:none">
+    Soumettre l'examen ✓
+  </button>
+</div>
+
+<!-- ========== RESULTS SCREEN ========== -->
+<div id="resultsScreen" class="screen">
+  <div class="results-inner">
+    <div class="trophy-wrap">
+      <div class="trophy" id="trophyIcon">🎓</div>
+    </div>
+    <h2 class="results-title">Résultats de l'examen</h2>
+    <div class="score-display">
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120">
+          <circle class="sc-bg" cx="60" cy="60" r="52"/>
+          <circle class="sc-fill" id="scoreArc" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="score-inner">
+          <span class="score-num" id="finalScore">0</span>
+          <span class="score-denom" id="finalTotal">/30</span>
+        </div>
+      </div>
+      <div class="score-stats">
+        <div class="stat-row correct"><span class="dot"></span><span id="correctCount">0</span> correctes</div>
+        <div class="stat-row wrong"><span class="dot"></span><span id="wrongCount">0</span> incorrectes</div>
+        <div class="stat-row skip"><span class="dot"></span><span id="skipCount">0</span> sans réponse</div>
+        <div class="stat-row time"><span class="dot"></span><span id="timeTaken">–</span> de temps</div>
+      </div>
+    </div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+
+    <!-- Review accordion -->
+    <div class="review-header">
+      <h3>Correction détaillée</h3>
+      <button class="btn-toggle-review" id="toggleReview">Afficher ▾</button>
+    </div>
+    <div class="review-list" id="reviewList" style="display:none"></div>
+
+    <div class="results-actions">
+      <button class="btn-primary" id="restartBtn">↺ Recommencer</button>
+      <button class="btn-secondary" id="reviewBtn">Voir correction</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
